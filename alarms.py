@@ -14,7 +14,7 @@ MONTH = 6
 DAY = 1
 
 
-def table_events(events):
+def get_events_table(events):
     sorted_events = sorted(events.items(), key=lambda i: i[0])
     table_data = []
     for event in sorted_events:
@@ -55,4 +55,4 @@ if __name__ == '__main__':
     events = defaultdict(list)
     for event in parsed_log:
         events[event['log_row_date']].append(event)
-    print(table_events(events))
+    print(get_events_table(events))
