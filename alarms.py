@@ -8,8 +8,9 @@ FOLDER_PATH = r'\\192.168.25.97\c\Logs\Alarms' #r'Alarms'  # r'\\192.168.25.97\c
 FILES_COUNT = 11
 
 ERROR_TXT = 'Обрыв связи с S7-1200 ШУ2'
+EVENTS_QTY = 15
 YEAR = 2023
-MONTH = 7
+MONTH = 6
 DAY = 1
 
 
@@ -18,10 +19,13 @@ def table_events(events):
     table_data = []
     for event in sorted_events:
         times = ''
-        for item in event[1]:
+        more_events_indicator = ' '
+        if len(event[1]) > EVENTS_QTY:
+            more_events_indicator = f'...({len(event[1])} events)'
+        for item in event[1][:EVENTS_QTY]:
             times += f" {item['log_row_time']}"
         table_data.append(
-                [datetime.strftime(event[0], "%d %B %Y"), times]
+                [datetime.strftime(event[0], "%d %B %Y"), f'{times}{more_events_indicator}']
             )
     table_instance = SingleTable(table_data)
     table_instance.inner_heading_row_border = False
