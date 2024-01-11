@@ -1,4 +1,5 @@
 import csv
+import json
 import os
 import time
 import uuid
@@ -7,6 +8,7 @@ from collections import defaultdict
 from pprint import pprint
 from terminaltables import SingleTable
 from docxtpl import DocxTemplate
+from common import create_doc_final
 
 FOLDER_PATH = r'logs' #r'Alarms'  # r'\\192.168.25.97\c\Logs\Scale\Trunk_conveyor'
 # FILENAME = 'Trunk_scale_weight_hour_log_0.csv'
@@ -35,16 +37,6 @@ DAY = 1
 #     table_instance = SingleTable(table_data)
 #     table_instance.inner_heading_row_border = False
 #     return table_instance.table
-
-
-def create_doc_final(path, context, exists=False):
-    doc = DocxTemplate(path)
-    doc.render(context)
-    filename = 'scales_report'
-    extension = '.docx'
-    if exists:
-        filename += uuid.uuid4().hex
-    doc.save(filename+extension)
 
 
 if __name__ == '__main__':
@@ -120,8 +112,9 @@ if __name__ == '__main__':
         'year_weight_sum': round(year_weight_sum, 3)
     }
     try:
-        create_doc_final(TEMPLATE_PATH, context)
+        create_doc_final(TEMPLATE_PATH, context, 'scales_report')
     except PermissionError:
-        create_doc_final(TEMPLATE_PATH, context, exists=True)
-    
-        
+        create_doc_final(TEMPLATE_PATH, context, 'scales_report', exists=True)
+
+    with open('scales_report.json', 'w', encoding='utf8') as file:
+        json.dump(context, file, ensure_ascii=False)
