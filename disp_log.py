@@ -55,6 +55,8 @@ if __name__ == '__main__':
                     sheet_name=f'{page}',
                     na_filter=False).to_dict(orient='records'
                     )
+                if page not in (10, 20, 30):
+                    page = str(page).replace('0', '')
                 log = log[0]
                 match = False
                 for record in log:
@@ -93,7 +95,7 @@ if __name__ == '__main__':
         month_report = {
             month: {
                 'days': days,
-                'month_weight_sum': month_weight_sum
+                'month_weight_sum': round(month_weight_sum, 3)
             }
         }
         report.append(month_report)    
