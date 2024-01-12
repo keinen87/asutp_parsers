@@ -2,12 +2,10 @@ import csv
 import json
 import os
 import time
-import uuid
 from datetime import datetime
 from collections import defaultdict
 from pprint import pprint
 from terminaltables import SingleTable
-from docxtpl import DocxTemplate
 from common import create_doc_final
 
 FOLDER_PATH = r'logs' #r'Alarms'  # r'\\192.168.25.97\c\Logs\Scale\Trunk_conveyor'
@@ -19,24 +17,29 @@ TEMPLATE_PATH = 'шаблон.docx'
 YEAR = 2023
 MONTH = 3
 DAY = 1
+EVENTS_QTY = 15
 
 
-# def get_events_table(events):
-#     sorted_events = sorted(events.items(), key=lambda i: i[0])
-#     table_data = []
-#     for event in sorted_events:
-#         times = ''
-#         more_events_indicator = ' '
-#         if len(event[1]) > EVENTS_QTY:
-#             more_events_indicator = f'...({len(event[1])} events)'
-#         for item in event[1][:EVENTS_QTY]:
-#             times += f" {item['log_row_time']}"
-#         table_data.append(
-#                 [datetime.strftime(event[0], "%d %B %Y"), f'{times}{more_events_indicator}']
-#             )
-#     table_instance = SingleTable(table_data)
-#     table_instance.inner_heading_row_border = False
-#     return table_instance.table
+def get_events_table(report):
+    table_data = []
+    table_data.append(
+        [YEAR, f"{report['year_weight_sum']} т."]
+    )
+    for month_report in report['report']:
+        for month_detail in month_report:
+            table_data.append(
+                [month_detail, f"{month_report[month_detail]['month_weight_sum']} т."]
+            )
+            # Если нужно по дням
+            # for day in month_report[month_detail]['days']:
+            #     day_num = list(day.items())[0][0]
+            #     day_weight = list(day.items())[0][1]
+            #     table_data.append(
+            #         [day_num, day_weight]
+            #     )
+    table_instance = SingleTable(table_data)
+    table_instance.inner_heading_row_border = True
+    return table_instance.table
 
 
 if __name__ == '__main__':
@@ -111,6 +114,7 @@ if __name__ == '__main__':
         'report': report,
         'year_weight_sum': round(year_weight_sum, 3)
     }
+    print(get_events_table(context))
     try:
         create_doc_final(TEMPLATE_PATH, context, 'scales_report')
     except PermissionError:
