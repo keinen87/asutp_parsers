@@ -42,25 +42,24 @@ def get_events_table(report):
     return table_instance.table
 
 
-if __name__ == '__main__':
+def get_parsed_log(path):
     parsed_log = []
-    with open(os.path.join(FOLDER_PATH, FILENAME), 'r', newline='') as file:
+    with open(path, 'r', newline='') as file:
         reader = csv.DictReader(file, delimiter=';')
         for row in reader:
-            try:
-                log_row_datetime = datetime.strptime(row['TimeString'], '%d.%m.%Y %H:%M:%S')
-                log_row_date = datetime.strptime(row['TimeString'], '%d.%m.%Y %H:%M:%S').date()
-                log_row_weight = round(float(row['VarValue'].replace(',', '.')), 3)
-                if log_row_date.year == YEAR:
-                    parsed_log.append({
-                        'log_row_date': log_row_date,
-                        'log_row_time': log_row_datetime,
-                        'log_row_weight': log_row_weight
-                    })
-            except ValueError as ex:
-                print(ex)
-                continue
+            log_row_datetime = datetime.strptime(row['TimeString'], '%d.%m.%Y %H:%M:%S')
+            log_row_date = datetime.strptime(row['TimeString'], '%d.%m.%Y %H:%M:%S').date()
+            log_row_weight = round(float(row['VarValue'].replace(',', '.')), 3)
+            if log_row_date.year == YEAR:
+                parsed_log.append({
+                    'log_row_date': log_row_date,
+                    'log_row_time': log_row_datetime,
+                    'log_row_weight': log_row_weight
+                })
+    return parsed_log  
 
+
+def get_full_report(parsed_log):
     events = defaultdict(list)
     for event in parsed_log:
         events[event['log_row_date']].append(event)
@@ -100,8 +99,8 @@ if __name__ == '__main__':
                 month_weight_sum += day_weight_sum
             else:
                 continue
-        month_weight_sum = round(month_weight_sum, 3)    
-        year_weight_sum += month_weight_sum    
+        month_weight_sum = round(month_weight_sum, 3)
+        year_weight_sum += month_weight_sum
         month_report = {
             months[month]: {
                 'days': days,
@@ -109,16 +108,25 @@ if __name__ == '__main__':
             }
         }
         report.append(month_report)
-
-    context = {
+    full_report = {
         'report': report,
         'year_weight_sum': round(year_weight_sum, 3)
     }
-    print(get_events_table(context))
-    try:
-        create_doc_final(TEMPLATE_PATH, context, 'scales_report')
-    except PermissionError:
-        create_doc_final(TEMPLATE_PATH, context, 'scales_report', exists=True)
+    return full_report
 
+
+def main():
+    filepath = os.path.join(FOLDER_PATH, FILENAME)
+    parsed_log = get_parsed_log(filepath)
+    full_report = get_full_report(parsed_log)
+    print(get_events_table(full_report))
+    try:
+        create_doc_final(TEMPLATE_PATH, full_report, 'scales_report')
+    except PermissionError:
+        create_doc_final(TEMPLATE_PATH, full_report, 'scales_report', exists=True)
     with open('scales_report.json', 'w', encoding='utf8') as file:
-        json.dump(context, file, ensure_ascii=False)
+        json.dump(full_report, file, ensure_ascii=False)
+
+
+if __name__ == '__main__':
+    main()
