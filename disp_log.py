@@ -64,6 +64,9 @@ if __name__ == '__main__':
                         if 'Римпул' in record:
                             match = True
                             target = re.findall(r'\d*,\d*', record)
+                            if not target:
+                                target = re.findall(r'\d{3,}', record)
+                                print(target)  
                             try:
                                 weight = float(target[0].replace(',', '.'))
                                 month_weight_sum += weight
