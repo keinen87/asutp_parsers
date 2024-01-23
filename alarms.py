@@ -9,8 +9,8 @@ FILES_COUNT = 11
 
 ERROR_TXT = 'Обрыв связи с S7-1200 ШУ2'
 EVENTS_QTY = 15
-YEAR = 2023
-MONTH = 6
+YEAR = 2024
+MONTH = 1
 DAY = 1
 
 
