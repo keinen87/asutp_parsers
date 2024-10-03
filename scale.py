@@ -8,14 +8,14 @@ from pprint import pprint
 from terminaltables import SingleTable
 from common import create_doc_final
 
-FOLDER_PATH = r'logs' #r'Alarms'  # r'\\192.168.25.97\c\Logs\Scale\Trunk_conveyor'
+FOLDER_PATH = r'\\192.168.25.97\c\Logs\Scale\Trunk_conveyor' # r'logs'
 # FILENAME = 'Trunk_scale_weight_hour_log_0.csv'
 FILENAME = 'Trunk_scale_weight_minute_log_0.csv'
 TEMPLATE_PATH = 'шаблон.docx'
 
 
-YEAR = 2023
-MONTH = 3
+YEAR = 2024
+MONTH = 1
 DAY = 1
 EVENTS_QTY = 15
 
@@ -110,7 +110,8 @@ def get_full_report(parsed_log):
         report.append(month_report)
     full_report = {
         'report': report,
-        'year_weight_sum': round(year_weight_sum, 3)
+        'year_weight_sum': round(year_weight_sum, 3),
+        'current_year': YEAR
     }
     return full_report
 
